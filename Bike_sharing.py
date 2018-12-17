@@ -19,7 +19,7 @@ X["year"] = X.datetime.apply(lambda x : x.split()[0].split('-')[0])
 X["month"] = X.datetime.apply(lambda x : x.split()[0].split('-')[1])
 X["day"] = X.datetime.apply(lambda x : x.split()[0].split('-')[2])
 
-X.drop(['datetime'], axis = 1, inplace = True)
+#X.drop(['datetime'], axis = 1, inplace = True)
 
 X['year'] = X['year'].map({'2012': 1, '2011': 0})
 
@@ -31,7 +31,7 @@ X.iloc[:, 4:7] = sc.fit_transform(X.iloc[:, 4:7])
 # Create dummy variables for categorical data and drop unnessecary data (dummy variable trap)
 category = X[['season', 'workingday', 'weather', 'hour', 'year', 'month', 'day']]
 category = pd.get_dummies(category)
-category.drop(['hour_00', 'month_01', 'day_01'], axis = 1, inplace = True)
+category.drop(['hour_00','month_01', 'day_01'], axis = 1, inplace = True)
 
 # modify X variable and add category variable to it
 X.drop(['season', 'workingday', 'weather', 'hour', 'year', 'month', 'day'], axis = 1, inplace = True)
@@ -48,8 +48,11 @@ rf = RandomForestRegressor(n_estimators = 10, random_state = 0)
 rf.fit(x_train, y_train)
 y_pred = rf.predict(x_test)
 
+from sklearn.metrics import explained_variance_score
+cm = explained_variance_score(y_test, y_pred, multioutput='uniform_average')
+
 # Score with RMSLE
-score = np.sqrt(np.mean((np.log(1+y_pred[i]) - np.log(1+y_test[i]))**2))
+score = np.sqrt(np.mean((np.log(1+y_pred) - np.log(1+y_test))**2))
 
 
 
